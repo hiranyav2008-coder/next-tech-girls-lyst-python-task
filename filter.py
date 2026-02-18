@@ -40,6 +40,7 @@ def filter_by_color(products, color):
     Hint: Each product has a 'color' field you can check.
     """
     # YOUR CODE HERE
+    return [product for product in products if product.get("color", "").lower() == color.lower()]
     pass
 
 
@@ -60,7 +61,12 @@ def filter_by_price_range(products, min_price, max_price):
     For items on sale, use the discount_price, otherwise use regular_price.
     """
     # YOUR CODE HERE
-    pass
+    filtered = []
+    for product in products:
+        price = product.get('discount_price') if product.get('discount_price') is not None else product.get('regular_price')
+        if price is not None and min_price <= price <= max_price:
+            filtered.append(product)
+    return filtered
 
 
 def filter_by_sale_status(products, on_sale=True):
@@ -79,7 +85,12 @@ def filter_by_sale_status(products, on_sale=True):
     Hint: Each product has an 'on_sale' field (True/False).
     """
     # YOUR CODE HERE
-    pass
+    filtered=[]
+    for product in products:
+        sale=product.get('on_sale')
+        if sale==on_sale:
+            filtered.append(product)
+    return filtered
 
 
 def filter_by_brand(products, brand):
@@ -97,7 +108,11 @@ def filter_by_brand(products, brand):
     Hint: Each product has a 'designer' field you can check.
     """
     # YOUR CODE HERE
-    pass
+    filtered = []
+    for product in products:
+        if product.get('designer') == brand:
+            filtered.append(product)
+    return filtered
 
 
 def sort_by_price_high_to_low(products):
@@ -115,7 +130,12 @@ def sort_by_price_high_to_low(products):
     You can use Python's sorted() function with a key parameter.
     """
     # YOUR CODE HERE
-    pass
+    def get_effective_price(product):
+        if product.get('on_sale') and product.get('discount_price') is not None:
+            return product['discount_price']
+        return product.get('regular_price', 0)
+    sorted_products = sorted(products, key=get_effective_price, reverse=True)
+    return sorted_products
 
 
 def sort_by_price_low_to_high(products):
@@ -133,7 +153,12 @@ def sort_by_price_low_to_high(products):
     You can use Python's sorted() function with a key parameter.
     """
     # YOUR CODE HERE
-    pass
+    def get_effective_price(product):
+        if product.get('on_sale') and product.get('discount_price') is not None:
+            return product['discount_price']
+        return product.get('regular_price', 0)
+    sorted_products = sorted(products, key=get_effective_price, reverse=False)
+    return sorted_products
 
 
 def sort_by_popularity(products):
@@ -151,7 +176,10 @@ def sort_by_popularity(products):
     You can use Python's sorted() function with a key parameter.
     """
     # YOUR CODE HERE
-    pass
+    def get_score(product):
+        return product.get('item_score', 0)
+
+    return sorted(products, key=lambda p: p.get('item_score', 0), reverse=True)
 
 
 def apply_filters(products, color=None, price_range=None, on_sale=None, brand=None):
@@ -178,11 +206,14 @@ def apply_filters(products, color=None, price_range=None, on_sale=None, brand=No
     # YOUR CODE HERE
     # Apply each filter if the parameter is provided
     # Example structure:
-    # if color is not None:
-    #     filtered_products = filter_by_color(filtered_products, color)
-    # if price_range is not None:
-    #     filtered_products = filter_by_price_range(filtered_products, price_range[0], price_range[1])
-    # ... continue for other filters
+    if color is not None:
+        filtered_products = filter_by_color(filtered_products, color)
+    if price_range is not None:
+        filtered_products = filter_by_price_range(filtered_products, price_range[0], price_range[1])
+    if on_sale is not None:
+        filtered_products= filter_by_sale_status(filtered_products, on_sale=True)
+    if brand is not None:
+        filtered_products= filter_by_brand(filtered_products, brand)
 
     return filtered_products
 
